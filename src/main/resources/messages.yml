@@ -1,26 +1,63 @@
-teleport:
-  staff:
-    tp:
-      self: "<green>Teleported to <white>{player}</white>.</green>"
-      other: "<green>Teleported <white>{from}</white> to <white>{to}</white>.</green>"
-    tphere:
-      sender: "<green>Brought <white>{player}</white> to you.</green>"
-      target: "<green>You were teleported to <white>{player}</white>.</green>"
-    tpall: "<green>Teleported everyone to you.</green>"
+#===============================
+# General messages
+#===============================
+common:
+  only-players: "<red>Only players can use this command.</red>"
+  player-not-found: "<red>That player is not online.</red>"
+  no-permission: "<red>You do not have permission to do that.</red>"
 
+#===============================
+# Teleport messages
+#===============================
+teleport:
+  # Global errors
+  errors:
+    self: "<red>You cannot teleport to yourself.</red>"
+    player-not-found: "<red>That player is not online.</red>"
+    none: "<red>You have no pending teleport requests.</red>"
+    none-to-cancel: "<red>You have no outgoing teleport requests.</red>"
+    expired: "<red>Teleport request expired.</red>"
+
+  # Staff teleport commands
+  tp:
+    self: "<green>Teleported to <white>{player}</white>.</green>"
+    others: "<green>Teleported <white>{from}</white> to <white>{to}</white>.</green>"
+  tpall:
+    self: "<green>Teleported everyone to you.</green>"
+  tphere:
+    self: "<green>Brought <white>{player}</white> to you.</green>"
+    others: "<green>You were teleported to <white>{player}</white>.</green>"
+
+  # Player teleport commands
   tpa:
     sent: "<green>Teleport request sent to <white>{player}</white>.</green>"
-    received: "<green><white>{player}</white> wants to teleport to you. Use <white>/tpaccept</white> or <white>/tpdeny</white>.</green>"
-    here_sent: "<green>Teleport-here request sent to <white>{player}</white>.</green>"
-    here_received: "<green><white>{player}</white> wants you to teleport to them. Use <white>/tpaccept</white> or <white>/tpdeny</white>.</green>"
-    accepted: "<green>Teleport request accepted.</green>"
-    denied: "<red>Teleport request denied.</red>"
-    expired: "<red>Teleport request expired.</red>"
-    none: "<red>You have no pending requests.</red>"
-    cancelled: "<green>Cancelled <white>{amount}</white> teleport request(s).</green>"
-    none-to-cancel: "<red>You have no outgoing teleport requests.</red>"
+    received: "<green><white>{player}</white> wants to teleport to you. Use <white>/tpaccept</white> or <white>/tpadeny</white>.</green>"
+    self-error: "<red>You cannot send a teleport request to yourself.</red>"
+    blocked: "<red><white>{player}</white> is not accepting teleport requests.</red>"
+    already-active: "<red>You already have a pending teleport request with <white>{player}</white>.</red>"
+    expired-requester: "<red>Your teleport request to <white>{player}</white> has expired.</red>"
+    expired-receiver: "<red>The teleport request has expired.</red>"
     cancelled-by-sender: "<red><white>{player}</white> cancelled their teleport request.</red>"
+  tpahere:
+    sent: "<green>Teleport-here request sent to <white>{player}</white>.</green>"
+    received: "<green><white>{player}</white> wants you to teleport to them. Use <white>/tpaccept</white> or <white>/tpadeny</white>.</green>"
+    self-error: "<red>You cannot send a teleport request to yourself.</red>"
+  tpaccept:
+    self: "<green>Teleport request accepted.</green>"
+    other: "<green><white>{player}</white> accepted your teleport request.</green>"
+  tpadeny:
+    self: "<red>Teleport request denied.</red>"
+    other: "<red><white>{player}</white> denied your teleport request.</red>"
+  tpacancel:
+    self: "<green>Cancelled <white>{amount}</white> teleport request(s).</green>"
+    other: "<red><white>{player}</white> cancelled their teleport request.</red>"
+  tpatoggle:
+    enabled: "<green>You can now receive teleport requests.</green>"
+    disabled: "<red>You will no longer receive teleport requests.</red>"
 
+#===============================
+# Gamemode messages
+#===============================
 gamemode:
   no-permission: "<red>You cannot change other players' gamemode.</red>"
   player-not-found: "<red>That player is not online.</red>"
@@ -29,13 +66,22 @@ gamemode:
     sender: "<green>Set <white>{player}</white>'s gamemode to <white>{mode}</white>.</green>"
     target: "<green>Your gamemode was set to <white>{mode}</white> by <white>{player}</white>.</green>"
 
+#===============================
+# /reload message
+#===============================
 reload:
   success: "<green>BloomVale configuration reloaded.</green>"
 
+#===============================
+# /back messages
+#===============================
 back:
   none: "<red>You have nowhere to go back to.</red>"
   success: "<green>Teleported back.</green>"
 
+#===============================
+# Fly messages
+#===============================
 fly:
   self-on: "<green>Flight enabled.</green>"
   self-off: "<red>Flight disabled.</red>"
@@ -44,23 +90,27 @@ fly:
   target-on: "<green>Your flight was enabled by <white>{player}</white>.</green>"
   target-off: "<red>Your flight was disabled by <white>{player}</white>.</red>"
 
+#===============================
+# /heal messages
+#===============================
 heal:
   self: "<green>You have been healed.</green>"
   other: "<green>Healed <white>{player}</white>.</green>"
   target: "<green>You were healed by <white>{player}</white>.</green>"
   cooldown: "<red>You must wait <white>{seconds}</white>s before healing again.</red>"
 
+#===============================
+# /feed messages
+#===============================
 feed:
   self: "<green>You have been fed.</green>"
   other: "<green>Fed <white>{player}</white>.</green>"
   target: "<green>You were fed by <white>{player}</white>.</green>"
   cooldown: "<red>You must wait <white>{seconds}</white>s before feeding again.</red>"
 
-common:
-  only-players: "<red>Only players can use this command.</red>"
-  player-not-found: "<red>That player is not online.</red>"
-  no-permission: "<red>You do not have permission to do that.</red>"
-
+#===============================
+# /flyspeed messages
+#===============================
 flyspeed:
   no-flight: "<red>You must have flight enabled.</red>"
   reset: "<green>Your fly speed has been reset to default.</green>"

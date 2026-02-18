@@ -40,7 +40,6 @@ public final class FeedCommand {
     }
 
     /* ===================== EXECUTION ===================== */
-
     private static int self(CommandContext<CommandSourceStack> ctx) {
         if (!(ctx.getSource().getSender() instanceof Player player)) {
             ctx.getSource().getSender().sendMessage(

@@ -33,7 +33,6 @@ public final class GamemodeCommands {
     }
 
     /* ===================== CORE BUILDER ===================== */
-
     private static LiteralArgumentBuilder<CommandSourceStack> gmAlias(String command, GameMode mode) {
         return literal(command)
                 .requires(src ->

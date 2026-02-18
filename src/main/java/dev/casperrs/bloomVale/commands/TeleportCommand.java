@@ -28,7 +28,6 @@ public final class TeleportCommand {
     // =====================================================
     // STAFF COMMANDS
     // =====================================================
-
     public static LiteralArgumentBuilder<CommandSourceStack> staff() {
         return literal("tp")
                 .requires(s -> s.getSender().hasPermission("bloomvale.tp.tp"))
@@ -36,19 +35,27 @@ public final class TeleportCommand {
                 .then(argument("player", word())
                         .suggests(ONLINE_PLAYERS)
                         .executes(ctx -> {
+
                             if (!(ctx.getSource().getSender() instanceof Player sender)) return 0;
 
                             Player target = Bukkit.getPlayerExact(ctx.getArgument("player", String.class));
+
                             if (target == null) {
-                                sender.sendMessage(MessageService.get("teleport.player-not-found"));
+                                sender.sendMessage(MessageService.get("teleport.errors.player-not-found"));
+                                return 0;
+                            }
+
+                            if (target.equals(sender)) {
+                                sender.sendMessage(MessageService.get("teleport.errors.self"));
                                 return 0;
                             }
 
                             int result = TpService.tp(sender, target);
+
                             if (result > 0) {
                                 sender.sendMessage(
                                         MessageService.get(
-                                                "teleport.staff.tp.self",
+                                                "teleport.tp.self",
                                                 Map.of("player", target.getName())
                                         )
                                 );
@@ -57,27 +64,34 @@ public final class TeleportCommand {
                             return result;
                         })
 
-                        .then(argument("target", word())
+                        .then(argument("receiver", word())
                                 .suggests(ONLINE_PLAYERS)
                                 .executes(ctx -> {
+
                                     if (!(ctx.getSource().getSender() instanceof Player sender)) return 0;
 
-                                    Player from = Bukkit.getPlayerExact(ctx.getArgument("player", String.class));
-                                    Player to = Bukkit.getPlayerExact(ctx.getArgument("target", String.class));
+                                    Player requester = Bukkit.getPlayerExact(ctx.getArgument("player", String.class));
+                                    Player receiver = Bukkit.getPlayerExact(ctx.getArgument("receiver", String.class));
 
-                                    if (from == null || to == null) {
-                                        sender.sendMessage(MessageService.get("teleport.player-not-found"));
+                                    if (requester == null || receiver == null) {
+                                        sender.sendMessage(MessageService.get("teleport.errors.player-not-found"));
                                         return 0;
                                     }
 
-                                    int result = TpService.tp(sender, from, to);
+                                    if (requester.equals(receiver)) {
+                                        sender.sendMessage(MessageService.get("teleport.errors.self"));
+                                        return 0;
+                                    }
+
+                                    int result = TpService.tp(sender, requester, receiver);
+
                                     if (result > 0) {
                                         sender.sendMessage(
                                                 MessageService.get(
-                                                        "teleport.staff.tp.other",
+                                                        "teleport.tp.others",
                                                         Map.of(
-                                                                "from", from.getName(),
-                                                                "to", to.getName()
+                                                                "from", requester.getName(),
+                                                                "to", receiver.getName()
                                                         )
                                                 )
                                         );
@@ -93,11 +107,13 @@ public final class TeleportCommand {
         return literal("tpall")
                 .requires(s -> s.getSender().hasPermission("bloomvale.tp.tpall"))
                 .executes(ctx -> {
+
                     if (!(ctx.getSource().getSender() instanceof Player sender)) return 0;
 
                     int result = TpService.tpAll(sender);
+
                     if (result > 0) {
-                        sender.sendMessage(MessageService.get("teleport.staff.tpall"));
+                        sender.sendMessage(MessageService.get("teleport.tpall.self"));
                     }
 
                     return result;
@@ -110,26 +126,34 @@ public final class TeleportCommand {
                 .then(argument("player", word())
                         .suggests(ONLINE_PLAYERS)
                         .executes(ctx -> {
+
                             if (!(ctx.getSource().getSender() instanceof Player sender)) return 0;
 
-                            Player target = Bukkit.getPlayerExact(ctx.getArgument("player", String.class));
-                            if (target == null) {
-                                sender.sendMessage(MessageService.get("teleport.player-not-found"));
+                            Player receiver = Bukkit.getPlayerExact(ctx.getArgument("player", String.class));
+
+                            if (receiver == null) {
+                                sender.sendMessage(MessageService.get("teleport.errors.player-not-found"));
                                 return 0;
                             }
 
-                            int result = TpService.tpHere(sender, target);
+                            if (receiver.equals(sender)) {
+                                sender.sendMessage(MessageService.get("teleport.errors.self"));
+                                return 0;
+                            }
+
+                            int result = TpService.tpHere(sender, receiver);
+
                             if (result > 0) {
                                 sender.sendMessage(
                                         MessageService.get(
-                                                "teleport.staff.tphere.sender",
-                                                Map.of("player", target.getName())
+                                                "teleport.tphere.self",
+                                                Map.of("player", receiver.getName())
                                         )
                                 );
 
-                                target.sendMessage(
+                                receiver.sendMessage(
                                         MessageService.get(
-                                                "teleport.staff.tphere.target",
+                                                "teleport.tphere.others",
                                                 Map.of("player", sender.getName())
                                         )
                                 );
@@ -143,34 +167,41 @@ public final class TeleportCommand {
     // =====================================================
     // PLAYER TPA COMMANDS
     // =====================================================
-
     public static LiteralArgumentBuilder<CommandSourceStack> tpa() {
         return literal("tpa")
                 .requires(s -> s.getSender().hasPermission("bloomvale.tpa.use"))
                 .then(argument("player", word())
                         .suggests(ONLINE_PLAYERS)
                         .executes(ctx -> {
-                            if (!(ctx.getSource().getSender() instanceof Player sender)) return 0;
 
-                            Player target = Bukkit.getPlayerExact(ctx.getArgument("player", String.class));
-                            if (target == null) {
-                                sender.sendMessage(MessageService.get("teleport.player-not-found"));
+                            if (!(ctx.getSource().getSender() instanceof Player requester)) return 0;
+
+                            Player receiver = Bukkit.getPlayerExact(ctx.getArgument("player", String.class));
+
+                            if (receiver == null) {
+                                requester.sendMessage(MessageService.get("teleport.errors.player-not-found"));
                                 return 0;
                             }
 
-                            TpaService.send(sender, target, TpaService.Type.TPA);
+                            if (receiver.equals(requester)) {
+                                requester.sendMessage(MessageService.get("teleport.tpa.self-error"));
+                                return 0;
+                            }
 
-                            sender.sendMessage(
+                            boolean sent = TpaService.send(requester, receiver, TpaService.Type.TPA);
+                            if (!sent) return 0;
+
+                            requester.sendMessage(
                                     MessageService.get(
                                             "teleport.tpa.sent",
-                                            Map.of("player", target.getName())
+                                            Map.of("player", receiver.getName())
                                     )
                             );
 
-                            target.sendMessage(
+                            receiver.sendMessage(
                                     MessageService.get(
                                             "teleport.tpa.received",
-                                            Map.of("player", sender.getName())
+                                            Map.of("player", requester.getName())
                                     )
                             );
 
@@ -185,27 +216,35 @@ public final class TeleportCommand {
                 .then(argument("player", word())
                         .suggests(ONLINE_PLAYERS)
                         .executes(ctx -> {
-                            if (!(ctx.getSource().getSender() instanceof Player sender)) return 0;
 
-                            Player target = Bukkit.getPlayerExact(ctx.getArgument("player", String.class));
-                            if (target == null) {
-                                sender.sendMessage(MessageService.get("teleport.player-not-found"));
+                            if (!(ctx.getSource().getSender() instanceof Player requester)) return 0;
+
+                            Player receiver = Bukkit.getPlayerExact(ctx.getArgument("player", String.class));
+
+                            if (receiver == null) {
+                                requester.sendMessage(MessageService.get("teleport.errors.player-not-found"));
                                 return 0;
                             }
 
-                            TpaService.send(sender, target, TpaService.Type.TPAHERE);
+                            if (receiver.equals(requester)) {
+                                requester.sendMessage(MessageService.get("teleport.tpahere.self-error"));
+                                return 0;
+                            }
 
-                            sender.sendMessage(
+                            boolean sent = TpaService.send(requester, receiver, TpaService.Type.TPAHERE);
+                            if (!sent) return 0;
+
+                            requester.sendMessage(
                                     MessageService.get(
-                                            "teleport.tpa.here_sent",
-                                            Map.of("player", target.getName())
+                                            "teleport.tpahere.sent",
+                                            Map.of("player", receiver.getName())
                                     )
                             );
 
-                            target.sendMessage(
+                            receiver.sendMessage(
                                     MessageService.get(
-                                            "teleport.tpa.here_received",
-                                            Map.of("player", sender.getName())
+                                            "teleport.tpahere.received",
+                                            Map.of("player", requester.getName())
                                     )
                             );
 
@@ -218,34 +257,38 @@ public final class TeleportCommand {
         return literal("tpaccept")
                 .requires(s -> s.getSender().hasPermission("bloomvale.tpa.use"))
                 .executes(ctx -> {
-                    if (!(ctx.getSource().getSender() instanceof Player target)) return 0;
 
-                    var req = TpaService.get(target);
+                    if (!(ctx.getSource().getSender() instanceof Player receiver)) return 0;
+
+                    var req = TpaService.get(receiver);
+
                     if (req == null) {
-                        target.sendMessage(MessageService.get("teleport.tpa.none"));
+                        receiver.sendMessage(MessageService.get("teleport.errors.none"));
                         return 0;
                     }
 
-                    Player from = Bukkit.getPlayer(req.from());
-                    if (from == null) {
-                        TpaService.clear(target);
-                        target.sendMessage(MessageService.get("teleport.tpa.none"));
+                    Player requester = Bukkit.getPlayer(req.requester());
+
+                    if (requester == null) {
+                        TpaService.clear(receiver);
+                        receiver.sendMessage(MessageService.get("teleport.errors.none"));
                         return 0;
                     }
 
                     if (req.type() == TpaService.Type.TPA) {
-                        from.teleport(target.getLocation());
+                        requester.teleport(receiver.getLocation());
                     } else {
-                        target.teleport(from.getLocation());
+                        receiver.teleport(requester.getLocation());
                     }
 
-                    TpaService.clear(target);
+                    TpaService.clear(receiver);
 
-                    target.sendMessage(MessageService.get("teleport.tpa.accepted"));
-                    from.sendMessage(
+                    receiver.sendMessage(MessageService.get("teleport.tpaccept.self"));
+
+                    requester.sendMessage(
                             MessageService.get(
-                                    "teleport.tpa.accepted",
-                                    Map.of("player", target.getName())
+                                    "teleport.tpaccept.other",
+                                    Map.of("player", receiver.getName())
                             )
                     );
 
@@ -257,15 +300,31 @@ public final class TeleportCommand {
         return literal("tpadeny")
                 .requires(s -> s.getSender().hasPermission("bloomvale.tpa.use"))
                 .executes(ctx -> {
-                    if (!(ctx.getSource().getSender() instanceof Player target)) return 0;
 
-                    if (TpaService.get(target) == null) {
-                        target.sendMessage(MessageService.get("teleport.tpa.none"));
+                    if (!(ctx.getSource().getSender() instanceof Player receiver)) return 0;
+
+                    var req = TpaService.get(receiver);
+
+                    if (req == null) {
+                        receiver.sendMessage(MessageService.get("teleport.errors.none"));
                         return 0;
                     }
 
-                    TpaService.clear(target);
-                    target.sendMessage(MessageService.get("teleport.tpa.denied"));
+                    Player requester = Bukkit.getPlayer(req.requester());
+
+                    TpaService.clear(receiver);
+
+                    receiver.sendMessage(MessageService.get("teleport.tpadeny.self"));
+
+                    if (requester != null) {
+                        requester.sendMessage(
+                                MessageService.get(
+                                        "teleport.tpadeny.other",
+                                        Map.of("player", receiver.getName())
+                                )
+                        );
+                    }
+
                     return 1;
                 });
     }
@@ -275,22 +334,20 @@ public final class TeleportCommand {
                 .requires(s -> s.getSender() instanceof Player &&
                         s.getSender().hasPermission("bloomvale.tpa.use"))
                 .executes(ctx -> {
-                    if (!(ctx.getSource().getSender() instanceof Player sender)) return 0;
 
-                    int cancelled = TpaService.cancelAllOutgoing(sender);
+                    if (!(ctx.getSource().getSender() instanceof Player requester)) return 0;
+
+                    int cancelled = TpaService.cancelAllOutgoing(requester);
 
                     if (cancelled == 0) {
-                        sender.sendMessage(MessageService.get("teleport.tpa.none-to-cancel"));
+                        requester.sendMessage(MessageService.get("teleport.errors.none-to-cancel"));
                         return 0;
                     }
 
-                    sender.sendMessage(
+                    requester.sendMessage(
                             MessageService.get(
-                                    "teleport.tpa.cancelled",
-                                    Map.of(
-                                            "player", sender.getName(),
-                                            "amount", String.valueOf(cancelled)
-                                    )
+                                    "teleport.tpacancel.self",
+                                    Map.of("amount", String.valueOf(cancelled))
                             )
                     );
 
@@ -303,14 +360,15 @@ public final class TeleportCommand {
                 .requires(s -> s.getSender() instanceof Player &&
                         s.getSender().hasPermission("bloomvale.tpa.use"))
                 .executes(ctx -> {
+
                     if (!(ctx.getSource().getSender() instanceof Player player)) return 0;
 
                     boolean enabled = TpaService.toggle(player);
 
                     player.sendMessage(
                             MessageService.get(
-                                    enabled ? "teleport.tpa.toggle-on"
-                                            : "teleport.tpa.toggle-off"
+                                    enabled ? "teleport.tpatoggle.enabled"
+                                            : "teleport.tpatoggle.disabled"
                             )
                     );
 

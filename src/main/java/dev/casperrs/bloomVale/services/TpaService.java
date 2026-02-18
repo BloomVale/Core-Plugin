@@ -15,19 +15,21 @@ public final class TpaService {
     public enum Type { TPA, TPAHERE }
 
     public record Request(
-            UUID from,
+            UUID requester,
             Type type,
             int expiryTaskId
     ) {}
 
     private static final Map<UUID, Request> requests = new ConcurrentHashMap<>();
     private static final Set<UUID> disabled = ConcurrentHashMap.newKeySet();
+    private static final Map<UUID, Long> cooldowns = new ConcurrentHashMap<>();
+
+    private static final long COOLDOWN_MILLIS = 10_000; // 10 seconds
 
     private static JavaPlugin plugin;
 
     private TpaService() {}
 
-    // MUST be called once in onEnable
     public static void init(JavaPlugin pluginInstance) {
         plugin = pluginInstance;
     }
@@ -36,76 +38,108 @@ public final class TpaService {
     // SEND REQUEST
     // =====================================================
 
-    public static void send(Player from, Player to, Type type) {
+    public static boolean send(Player requester, Player receiver, Type type) {
 
-        // Toggle check (with bypass permission)
-        if (!isEnabled(to) && !from.hasPermission("bloomvale.tpa.bypass")) {
-            from.sendMessage(
-                    MessageService.get(
-                            "teleport.tpa.blocked",
-                            Map.of("player", to.getName())
-                    )
-            );
-            return;
+        long now = System.currentTimeMillis();
+        UUID requesterId = requester.getUniqueId();
+
+        // Clean expired cooldown entry
+        Long expires = cooldowns.get(requesterId);
+        if (expires != null) {
+            if (now >= expires) {
+                cooldowns.remove(requesterId);
+            } else {
+                long secondsLeft = (expires - now) / 1000;
+                requester.sendMessage(
+                        MessageService.get(
+                                "teleport.tpa.cooldown",
+                                Map.of("seconds", String.valueOf(secondsLeft))
+                        )
+                );
+                return false;
+            }
         }
 
-        // Cancel existing request if present
-        clear(to);
+        // Toggle check
+        if (!isEnabled(receiver) && !requester.hasPermission("bloomvale.tpa.bypass")) {
+            requester.sendMessage(
+                    MessageService.get(
+                            "teleport.tpa.blocked",
+                            Map.of("player", receiver.getName())
+                    )
+            );
+            return false;
+        }
+
+        // Prevent duplicate active request
+        if (requests.containsKey(receiver.getUniqueId())) {
+            requester.sendMessage(
+                    MessageService.get(
+                            "teleport.tpa.already-active",
+                            Map.of("player", receiver.getName())
+                    )
+            );
+            return false;
+        }
 
         int taskId = Bukkit.getScheduler().runTaskLater(plugin, () -> {
-            Request req = requests.remove(to.getUniqueId());
+
+            Request req = requests.remove(receiver.getUniqueId());
             if (req == null) return;
 
-            Player sender = Bukkit.getPlayer(req.from());
+            Player requesterPlayer = Bukkit.getPlayer(req.requester());
 
-            // Notify target
-            to.sendMessage(
-                    MessageService.get("teleport.tpa.expired")
+            receiver.sendMessage(
+                    MessageService.get("teleport.tpa.expired-receiver")
             );
 
-            // Notify sender if online
-            if (sender != null) {
-                sender.sendMessage(
+            if (requesterPlayer != null) {
+                requesterPlayer.sendMessage(
                         MessageService.get(
-                                "teleport.tpa.expired",
-                                Map.of("player", to.getName())
+                                "teleport.tpa.expired-requester",
+                                Map.of("player", receiver.getName())
                         )
                 );
             }
 
-        }, 20L * 60).getTaskId(); // 60 seconds
+            applyCooldown(req.requester());
+
+        }, 20L * 60).getTaskId();
 
         requests.put(
-                to.getUniqueId(),
-                new Request(from.getUniqueId(), type, taskId)
+                receiver.getUniqueId(),
+                new Request(requesterId, type, taskId)
         );
+
+        return true;
     }
 
     // =====================================================
     // GET REQUEST
     // =====================================================
 
-    public static Request get(Player target) {
-        return requests.get(target.getUniqueId());
+    public static Request get(Player receiver) {
+        return requests.get(receiver.getUniqueId());
     }
 
     // =====================================================
-    // CLEAR REQUEST (accept/deny/manual clear)
+    // CLEAR REQUEST
     // =====================================================
 
-    public static void clear(Player target) {
-        Request req = requests.remove(target.getUniqueId());
+    public static void clear(Player receiver) {
+        Request req = requests.remove(receiver.getUniqueId());
         if (req != null) {
             Bukkit.getScheduler().cancelTask(req.expiryTaskId());
         }
     }
 
     // =====================================================
-    // CANCEL ALL OUTGOING REQUESTS
+    // CANCEL ALL OUTGOING
     // =====================================================
 
-    public static int cancelAllOutgoing(Player sender) {
-        UUID senderId = sender.getUniqueId();
+    public static int cancelAllOutgoing(Player requester) {
+
+        UUID requesterId = requester.getUniqueId();
         int removed = 0;
 
         Iterator<Map.Entry<UUID, Request>> iterator = requests.entrySet().iterator();
@@ -113,25 +147,27 @@ public final class TpaService {
         while (iterator.hasNext()) {
             Map.Entry<UUID, Request> entry = iterator.next();
 
-            if (!entry.getValue().from().equals(senderId)) continue;
+            if (!entry.getValue().requester().equals(requesterId)) continue;
 
-            UUID targetId = entry.getKey();
-
-            // Cancel expiry task
             Bukkit.getScheduler().cancelTask(entry.getValue().expiryTaskId());
 
-            Player targetPlayer = Bukkit.getPlayer(targetId);
-            if (targetPlayer != null) {
-                targetPlayer.sendMessage(
+            Player receiver = Bukkit.getPlayer(entry.getKey());
+            if (receiver != null) {
+                receiver.sendMessage(
                         MessageService.get(
                                 "teleport.tpa.cancelled-by-sender",
-                                Map.of("player", sender.getName())
+                                Map.of("player", requester.getName())
                         )
                 );
             }
 
             iterator.remove();
             removed++;
+        }
+
+        // 🔴 APPLY COOLDOWN AFTER CANCEL
+        if (removed > 0) {
+            applyCooldown(requesterId);
         }
 
         return removed;
@@ -146,15 +182,22 @@ public final class TpaService {
 
         if (disabled.contains(uuid)) {
             disabled.remove(uuid);
-            return true; // now enabled
+            return true;
         }
 
         disabled.add(uuid);
-        return false; // now disabled
+        return false;
     }
 
     public static boolean isEnabled(Player player) {
         return !disabled.contains(player.getUniqueId());
+    }
+
+    // ======================================================
+    // APPLY ANTI-JYNX SPAM
+    // =======================================================
+    private static void applyCooldown(UUID requester) {
+        cooldowns.put(requester, System.currentTimeMillis() + COOLDOWN_MILLIS);
     }
 
 }
