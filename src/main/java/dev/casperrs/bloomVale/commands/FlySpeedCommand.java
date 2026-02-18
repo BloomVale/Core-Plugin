@@ -19,7 +19,7 @@ public final class FlySpeedCommand {
         return Commands.literal("flyspeed")
                 .requires(source ->
                         source.getSender() instanceof Player &&
-                                source.getSender().hasPermission("bloomvale.command.flyspeed")
+                                source.getSender().hasPermission("bloomvale.fly.flyspeed")
                 )
 
                 .then(Commands.literal("default")
@@ -60,8 +60,15 @@ public final class FlySpeedCommand {
         sender.setFlySpeed(flySpeed);
 
         sender.sendMessage(
-                MessageService.get("flyspeed.set", Map.of("level", level + "x"))
+                MessageService.get(
+                        "flyspeed.set",
+                        Map.of(
+                                "player", sender.getName(),
+                                "level", level + "x"
+                        )
+                )
         );
+
 
         return 1;
     }
