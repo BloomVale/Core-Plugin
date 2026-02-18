@@ -57,3 +57,10 @@ common:
   only-players: "<red>Only players can use this command.</red>"
   player-not-found: "<red>That player is not online.</red>"
   no-permission: "<red>You do not have permission to do that.</red>"
+
+flyspeed:
+  no-flight: "<red>You must have flight enabled.</red>"
+  reset: "<green>Your fly speed has been reset to default.</green>"
+  invalid-range: "<red>Fly speed must be between 1 and 3.</red>"
+  invalid-input: "<red>Invalid input. Use 1, 2, 3 or default.</red>"
+  set: "<green>Fly speed set to level</green> <yellow><level></yellow>."
