@@ -34,6 +34,23 @@ permissions:
   bloomvale.gamemode.others:
     description: Change other players' gamemode
     default: op
+  ###### Staff Fly permissions ######
+  bloomvale.fly.*:
+    description: Access to all fly mode commands
+    default: op
+    children:
+      bloomvale.fly: true
+      bloomvale.fly.others: true
+      bloomvale.fly.flyspeed: true
+  bloomvale.fly:
+    description: Change fly mode
+    default: op
+  bloomvale.fly.others:
+    description: Change others fly mode
+    default: op
+  bloomvale.fly.flyspeed:
+    description: Change how fast a you can fly
+    default: op
   ###### Staff Teleport permissions ######
   bloomvale.tp.*:
     description: Access to all staff teleport commands
@@ -42,6 +59,12 @@ permissions:
       bloomvale.tp.tp: true
       bloomvale.tp.tphere: true
       bloomvale.tp.tpall: true
+      bloomvale.tpa.bypass: true
+  ###### Bypass Tpa toggle ######
+  bloomvale.tpa.bypass:
+    description: Bypass TPA toggle restrictions
+    default: op
+  ###### Staff teleport permissions ######
   bloomvale.tp.tp:
     description: Teleport yourself or players
     default: op

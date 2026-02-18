@@ -21,6 +21,8 @@ public final class BloomValeBootstrap implements PluginBootstrap {
                     event.registrar().register(TeleportCommand.tpaHere().build());
                     event.registrar().register(TeleportCommand.tpaAccept().build());
                     event.registrar().register(TeleportCommand.tpaDeny().build());
+                    event.registrar().register(TeleportCommand.tpaCancel().build());
+                    event.registrar().register(TeleportCommand.tpaToggle().build());
 
                     event.registrar().register(BackCommand.register().build());
                     event.registrar().register(FlyCommand.register().build());

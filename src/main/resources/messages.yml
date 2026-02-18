@@ -17,6 +17,9 @@ teleport:
     denied: "<red>Teleport request denied.</red>"
     expired: "<red>Teleport request expired.</red>"
     none: "<red>You have no pending requests.</red>"
+    cancelled: "<green>Cancelled <white>{amount}</white> teleport request(s).</green>"
+    none-to-cancel: "<red>You have no outgoing teleport requests.</red>"
+    cancelled-by-sender: "<red><white>{player}</white> cancelled their teleport request.</red>"
 
 gamemode:
   no-permission: "<red>You cannot change other players' gamemode.</red>"
@@ -63,4 +66,4 @@ flyspeed:
   reset: "<green>Your fly speed has been reset to default.</green>"
   invalid-range: "<red>Fly speed must be between 1 and 3.</red>"
   invalid-input: "<red>Invalid input. Use 1, 2, 3 or default.</red>"
-  set: "<green>Fly speed set to level</green> <yellow><level></yellow>."
+  set: "<green>Fly speed set to level</green> <yellow>{level}</yellow>."
