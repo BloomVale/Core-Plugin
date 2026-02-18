@@ -24,6 +24,8 @@ public final class BloomValeBootstrap implements PluginBootstrap {
 
                     event.registrar().register(BackCommand.register().build());
                     event.registrar().register(FlyCommand.register().build());
+                    event.registrar().register(FlySpeedCommand.register().build());
+
                     event.registrar().register(HealCommand.register().build());
                     event.registrar().register(FeedCommand.register().build());
                 }
