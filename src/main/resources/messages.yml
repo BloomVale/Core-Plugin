@@ -33,6 +33,11 @@ teleport:
     sent: "<green>Teleport request sent to <white>{player}</white>.</green>"
     received: "<green><white>{player}</white> wants to teleport to you. Use <white>/tpaccept</white> or <white>/tpadeny</white>.</green>"
     self-error: "<red>You cannot send a teleport request to yourself.</red>"
+    blocked: "<red><white>{player}</white> is not accepting teleport requests.</red>"
+    already-active: "<red>You already have a pending teleport request with <white>{player}</white>.</red>"
+    expired-requester: "<red>Your teleport request to <white>{player}</white> has expired.</red>"
+    expired-receiver: "<red>The teleport request has expired.</red>"
+    cancelled-by-sender: "<red><white>{player}</white> cancelled their teleport request.</red>"
   tpahere:
     sent: "<green>Teleport-here request sent to <white>{player}</white>.</green>"
     received: "<green><white>{player}</white> wants you to teleport to them. Use <white>/tpaccept</white> or <white>/tpadeny</white>.</green>"
