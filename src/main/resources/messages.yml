@@ -1,0 +1,59 @@
+teleport:
+  staff:
+    tp:
+      self: "<green>Teleported to <white>{player}</white>.</green>"
+      other: "<green>Teleported <white>{from}</white> to <white>{to}</white>.</green>"
+    tphere:
+      sender: "<green>Brought <white>{player}</white> to you.</green>"
+      target: "<green>You were teleported to <white>{player}</white>.</green>"
+    tpall: "<green>Teleported everyone to you.</green>"
+
+  tpa:
+    sent: "<green>Teleport request sent to <white>{player}</white>.</green>"
+    received: "<green><white>{player}</white> wants to teleport to you. Use <white>/tpaccept</white> or <white>/tpdeny</white>.</green>"
+    here_sent: "<green>Teleport-here request sent to <white>{player}</white>.</green>"
+    here_received: "<green><white>{player}</white> wants you to teleport to them. Use <white>/tpaccept</white> or <white>/tpdeny</white>.</green>"
+    accepted: "<green>Teleport request accepted.</green>"
+    denied: "<red>Teleport request denied.</red>"
+    expired: "<red>Teleport request expired.</red>"
+    none: "<red>You have no pending requests.</red>"
+
+gamemode:
+  no-permission: "<red>You cannot change other players' gamemode.</red>"
+  player-not-found: "<red>That player is not online.</red>"
+  self: "<green>Gamemode set to <white>{mode}</white>.</green>"
+  other:
+    sender: "<green>Set <white>{player}</white>'s gamemode to <white>{mode}</white>.</green>"
+    target: "<green>Your gamemode was set to <white>{mode}</white> by <white>{player}</white>.</green>"
+
+reload:
+  success: "<green>BloomVale configuration reloaded.</green>"
+
+back:
+  none: "<red>You have nowhere to go back to.</red>"
+  success: "<green>Teleported back.</green>"
+
+fly:
+  self-on: "<green>Flight enabled.</green>"
+  self-off: "<red>Flight disabled.</red>"
+  other-on: "<green>Enabled flight for <white>{player}</white>.</green>"
+  other-off: "<red>Disabled flight for <white>{player}</white>.</red>"
+  target-on: "<green>Your flight was enabled by <white>{player}</white>.</green>"
+  target-off: "<red>Your flight was disabled by <white>{player}</white>.</red>"
+
+heal:
+  self: "<green>You have been healed.</green>"
+  other: "<green>Healed <white>{player}</white>.</green>"
+  target: "<green>You were healed by <white>{player}</white>.</green>"
+  cooldown: "<red>You must wait <white>{seconds}</white>s before healing again.</red>"
+
+feed:
+  self: "<green>You have been fed.</green>"
+  other: "<green>Fed <white>{player}</white>.</green>"
+  target: "<green>You were fed by <white>{player}</white>.</green>"
+  cooldown: "<red>You must wait <white>{seconds}</white>s before feeding again.</red>"
+
+common:
+  only-players: "<red>Only players can use this command.</red>"
+  player-not-found: "<red>That player is not online.</red>"
+  no-permission: "<red>You do not have permission to do that.</red>"

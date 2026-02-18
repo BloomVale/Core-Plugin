@@ -1,0 +1,77 @@
+name: BloomVale
+version: '1.1.0'
+main: dev.casperrs.bloomVale.BloomVale
+description: BloomVale core functionalities
+author: ItzRepsac_ / Casper-RS
+website: https://casper-rs.dev
+prefix: BloomVale
+api-version: '1.21'
+softdepend: [PlaceholderAPI]
+paper-plugin-loader: dev.casperrs.bloomVale.papermc.BloomValeLoader
+permissions:
+  ###### Gamemode permissions ######
+  bloomvale.gamemode.*:
+    description: Allows access to all gamemode commands
+    default: op
+    children:
+      bloomvale.gamemode.survival: true
+      bloomvale.gamemode.creative: true
+      bloomvale.gamemode.adventure: true
+      bloomvale.gamemode.spectator: true
+      bloomvale.gamemode.others: true
+  bloomvale.gamemode.survival:
+    description: Allows the player to switch to survival mode
+    default: op
+  bloomvale.gamemode.creative:
+    description: Allows the player to switch to creative mode
+    default: op
+  bloomvale.gamemode.adventure:
+    description: Allows the player to switch to adventure mode
+    default: op
+  bloomvale.gamemode.spectator:
+    description: Allows the player to switch to spectator mode
+    default: op
+  bloomvale.gamemode.others:
+    description: Change other players' gamemode
+    default: op
+  ###### Staff Teleport permissions ######
+  bloomvale.tp.*:
+    description: Access to all staff teleport commands
+    default: op
+    children:
+      bloomvale.tp.tp: true
+      bloomvale.tp.tphere: true
+      bloomvale.tp.tpall: true
+  bloomvale.tp.tp:
+    description: Teleport yourself or players
+    default: op
+  bloomvale.tp.tphere:
+    description: Teleport a player to yourself
+    default: op
+  bloomvale.tp.tpall:
+    description: Teleport everyone to you
+    default: op
+  ###### Player Tpa Permission ######
+  bloomvale.tpa.use:
+    description: Use teleport request commands
+    default: true
+  ###### Reload Permission ######
+  bloomvale.reload:
+    description: Reload BloomVale configuration files
+    default: op
+  ###### Back Permission ######
+  bloomvale.back:
+    default: true
+  ###### Heal Permissions ######
+  bloomvale.heal:
+    default: op
+  bloomvale.heal.others:
+    default: op
+  ###### Feed Permissions ######
+  bloomvale.feed:
+    default: op
+  bloomvale.feed.others:
+    default: op
+  ###### Bypass Cooldown ######
+  bloomvale.cooldown.bypass:
+    default: op

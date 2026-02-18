@@ -1,0 +1,21 @@
+# The prefix in front of every message
+messages:
+  prefix: "<dark_gray>[<gradient:#6EE7B7:#3B82F6>BloomVale</gradient>]<gray> "
+
+# Prevent set messages from being logged to the console
+# Mainly to prevent spamming the console logs
+blocked-messages:
+  - "moved too quickly"
+
+# Cooldown configuration
+# Time in seconds
+cooldowns:
+  heal-seconds: 60
+  feed-seconds: 60
+
+back:
+  track-teleports: true
+  track-deaths: true
+  ignore-causes:
+    - "SPECTATE"     # optional: teleport cause names
+    - "COMMAND"      # example
